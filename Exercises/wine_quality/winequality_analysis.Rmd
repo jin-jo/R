@@ -1,0 +1,531 @@
+---
+title: "Red Wine Quality"
+author: "Jin Seo Jo"
+date: "26/09/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE}
+library(tidyverse)
+library(dplyr)
+library(scales)
+```
+
+```{r}
+wine_data <- read.csv("winequality-red.csv")
+```
+
+## Wine Quality
+```{r}
+# Distribution of red wine quality ratings
+ggplot(wine_data, aes(x = quality)) +
+  geom_bar(stat = "count", position = "dodge", fill = "red") +
+  ggtitle("Distribution of Red Wine Quality Ratings")
+```
+
+## Distribution of good/bad wines
+We will classify the wines by setting an arbitrary cutoff for our dependent variable (wine quality) at e.g. 7 or higher getting classified as 'good/1' and the remainder as 'not good/0'.
+```{r}
+# Create a variable indicating if a wine is good or bad
+wine_data$good_bad_wine <- ifelse(wine_data$quality > 6, "Good", "Bad") %>% 
+  factor()
+
+summary(wine_data)
+```
+`good_bad_wine` tells us that only 217 out of 1599 wines is considered as a good wine.
+
+```{r}
+# Distribution of good/bad wines
+ggplot(wine_data, aes(x = factor(1), fill = good_bad_wine)) +
+  geom_bar(width = 1) +
+  coord_polar("y") +
+  labs(fill = "Wine quality") +
+  theme_void()
+```
+ 
+## Relationship between Physiochemical Properties and Wine Quality
+Input variables (based on physiochemical tests):
+```{r}
+ls(wine_data)
+```
+
+### 1. Fixed Acidity and Wine Quality
+```{r}
+# From the 'wine_data', 
+# select rows where 'good_bad_wine' is "Good" and recode column 'fixed.acidity'
+wine_data$fixed.acidity[wine_data$good_bad_wine == "Good"]
+
+# Find mean values
+mean(wine_data$fixed.acidity[wine_data$good_bad_wine == "Good"])
+mean(wine_data$fixed.acidity[wine_data$good_bad_wine == "Bad"])
+```
+
+```{r}
+ggplot(wine_data, aes(x = fixed.acidity, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  # 'na.rm = TRUE' will remove NA values before the computation proceeds
+  geom_vline(aes(xintercept = mean(fixed.acidity[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(fixed.acidity[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "Fixed Acidity Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of Fixed Acidity Levels") +
+  theme_classic()
+```
+
+### 2. Volatile Acidity and Wine Quality
+```{r}
+ggplot(wine_data, aes(x = volatile.acidity, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  geom_vline(aes(xintercept = mean(volatile.acidity[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(volatile.acidity[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "Volatile Acidity Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of Volatile Acidity Levels") +
+  theme_classic()
+```
+ 
+ ### 3. Citric Acid and Wine Quality
+```{r}
+ggplot(wine_data, aes(x = citric.acid, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  geom_vline(aes(xintercept = mean(citric.acid[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(citric.acid[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "Citric Acidity Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of Citric Acidity Levels") +
+  theme_classic()
+```
+ 
+ ### 4. Residual Sugar and Wine Quality
+```{r}
+ggplot(wine_data, aes(x = residual.sugar, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  geom_vline(aes(xintercept = mean(residual.sugar[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(residual.sugar[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "Residual Sugar Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of Residual Sugar Levels") +
+  theme_classic()
+```
+ 
+Good and bad wines have very similar distributino of their corresponding physiochemical properties. 
+ 
+### 5. Chlorides and Wine Quality
+```{r}
+ggplot(wine_data, aes(x = chlorides, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  geom_vline(aes(xintercept = mean(chlorides[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(chlorides[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "Chlorides Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of Chlorides Levels") +
+  theme_classic()
+```
+
+Good and bad wines have very similar distributino of their corresponding physiochemical properties. 
+
+### 6. Free Sulfur Dioxide and Wine Quality
+```{r}
+ggplot(wine_data, aes(x = free.sulfur.dioxide, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  geom_vline(aes(xintercept = mean(free.sulfur.dioxide[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(free.sulfur.dioxide[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "Free Sulfur Dioxide Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of Free Sulfur Dioxide Levels") +
+  theme_classic()
+```
+
+Good and bad wines have very similar distributino of their corresponding physiochemical properties. 
+
+### 7. Total Sulfur Dioxide and Wine Quality
+```{r}
+ggplot(wine_data, aes(x = total.sulfur.dioxide, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  geom_vline(aes(xintercept = mean(total.sulfur.dioxide[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(total.sulfur.dioxide[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "Total Sulfur Dioxide Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of Total Sulfur Dioxide Levels") +
+  theme_classic()
+```
+
+Good and bad wines have very similar distributino of their corresponding physiochemical properties. 
+
+### 8. Density and Wine Quality
+```{r}
+ggplot(wine_data, aes(x = density, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  geom_vline(aes(xintercept = mean(density[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(density[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "Density Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of Density Levels") +
+  theme_classic()
+```
+
+Good and bad wines have very similar distributino of their corresponding physiochemical properties. 
+
+### 9. pH and Wine Quality
+```{r}
+ggplot(wine_data, aes(x = pH, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  geom_vline(aes(xintercept = mean(pH[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(pH[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "pH Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of pH Levels") +
+  theme_classic()
+```
+
+Good and bad wines have very similar distributino of their corresponding physiochemical properties. 
+
+### 10. Sulphates and Wine Quality
+```{r}
+ggplot(wine_data, aes(x = sulphates, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  geom_vline(aes(xintercept = mean(sulphates[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(sulphates[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "Sulphates Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of Sulphates Levels") +
+  theme_classic()
+```
+
+Sulphates level of the wine shows the most discriminating attributes.
+
+### 11. Alcohol and Wine Quality
+```{r}
+ggplot(wine_data, aes(x = alcohol, fill = good_bad_wine)) + 
+  geom_density(alpha = 0.25) +
+  geom_vline(aes(xintercept = mean(alcohol[good_bad_wine == "Good"], na.rm = TRUE)), 
+             color = "red", linetype = "dashed", lwd = 1) +
+  geom_vline(aes(xintercept = mean(alcohol[good_bad_wine == "Bad"], na.rm = TRUE)), 
+             color = "blue", linetype = "dashed", lwd = 1) +
+  scale_x_continuous(breaks = seq(4, 16, 1)) +
+  xlab(label = "Alcohol Level") +
+  labs(fill = "Wine Quality") +
+  ggtitle("Distribution of Alcohol Levels") +
+  theme_classic()
+```
+
+Alchol level of the wine shows the most discriminating attributes.  
+
+**Interpretation**:  
+- We can see that `residual.sugar`, `chlorides`, `free.sulfur.dioxide`, and `pH` have similar distributions. This means that `residual.sugar`, `chlorides`, `free.sulfur.dioxide`, and `pH` does not effect on wine quality.  
+- The most discriminating attributes we can observe are `sulphates` and `alcohol` level of the wine. This shows that `sulphates` and `alcohol` improve the quality of wine.  
+
+## Find the most important variables
+Selecting the most important predictor variables that explains the major part of variance of the reponse variable can be key to identify and build high performing models.
+
+### Random Forest Method
+Random forest can be very effectve to find a set of predictors that best explains the variance in the reponse variable.  
+
+Random forest are made out of decision trees.  
+Decision Trees are easy to build, easy to use and easy to interpret, but in practice they are not that awesome.  
+Decision Trees work great with the data used to create them, but they are not flecible when it comes to classifying new samples.  
+Random Foressts combine the simplicity of decision trees with flexibility resulting in a vast improvement in accuracy.
+
+```{r, message=FALSE}
+library(caret)
+library(randomForest)
+library(varImp)
+```
+
+```{r}
+str(wine_data)
+```
+
+```{r}
+sum(is.na(wine_data))
+```
+We do not have any missing values, therefore we do not have to impute values for the NAs in the dataset with 'rfImput()'
+
+```{r}
+# Fit the random forest
+# We will remove 'quality' since 'good_bad_wine' is based on 'quality'
+# We want the good_bad_wine column to be predicted by the data in all of the other columns except quality column
+model <- randomForest(formula = good_bad_wine ~ . - quality, data = wine_data, proximity = TRUE)
+
+model
+```
+**Type of random forest** show athat the random forest was built to classify samples.  
+
+**Number of trees** tells us how many trees are in the random forest.  
+Note: The default value is 500.  
+
+**No. of variables tried at each split** tells us how many variables (or columns of data) were considered at each internal node.  
+Note: Classification trees have a default setting of the square root of the number of variables. Regression trees have a default setting of the number of variables divided by 3.  
+
+**OOB estimate of error rate** means that 92% of OOB(Out-of-Bag) samples were correctly classified by the random forest.  
+
+**Confusion matrix**:  
+- There were 1348 bad quality wines that were correctly labeled "Bad"  
+- There were 98 good quality wines that were incorrectly classified "Bad"  
+- There were 34 bad quality wines that were incorrectly classified "Good"  
+- There were 119 good quality wines that were correctly classified "Good"  
+
+To see if 500 trees is enough for optimal classification, we can plot the error rates.
+```{r}
+oob.error.data <- data.frame(
+  Trees = rep(1:nrow(model$err.rate), times = 3),
+  Type = rep(c("OOB", "Bad", "Good"), each = nrow(model$err.rate)),
+  Error = c(model$err.rate[,"OOB"],
+            model$err.rate[, "Bad"],
+            model$err.rate[, "Good"]))
+```
+
+For the most part, this is all based on a matrix within `model` called `err.rate`.  
+
+More detail on `err.rate`:
+```{r}
+head(model$err.rate)
+```
+
+- There is one column for OOB error rate  
+- There is one column for the Bad error rate (i.e. how frequently bad wines are misclassified)  
+- There is one column for the Good error rate (i.e. how frequently good wines are misclassified)  
+- Each row reflects the error rates at different stages of creating the random forest.  
+- The first row contains the error rates after making the first tree.  
+- The second row contains the error rates after making the first two trees.  
+- The last row contians the error rates after making all 500 trees (i.e. default value)  
+
+More detail on `oob.error.data`:
+```{r}
+head(oob.error.data)
+```
+
+- There is one column for the number of trees.  
+- There is one column for the type of error.  
+- There is one column for the actual error value.  
+
+Now we call `ggplot()`
+```{r}
+ggplot(data = oob.error.data, aes(x = Trees, y = Error)) +
+  geom_line(aes(color = Type))
+```
+
+- The green line shows the error rate when classifying good quality of wines.   
+- The blue line shows the overall OOB error rate.  
+- The red line shows the error rate when classifying bad quality of wines.  
+- In general, we see the error rates decrease when our random forest has more trees.  
+- And we see that the error rates stabilize right after 200 trees.  
+- So adding more trees didn't help, but we would not have known this unless we used more trees.  
+
+Now we need to make sure we are considering the optimal number of variables at each internal node in the tree.  
+We start by making an empty vector that can hold 10 values.
+```{r}
+oob.values <- vector(length = 10)
+```
+
+Then we create a loop that tests differnet numbers of variables at each step. 
+```{r}
+# Each time we go through the loop, "i" increases by 1.
+# It starts at 1 and ends after 10.
+for(i in 1:10) {
+  # We are building a random forest using "i" to determine the numebr of variables to try at each step
+  # Specifically, we are setting 'mtry = i', and "i" equals values between 1 and 10
+  temp.model <- randomForest(formula = good_bad_wine ~ . - quality, data = wine_data, mtry = i)
+  # We store the OOB error rate after we build each random forest that uses a different value for mtry
+  # temp.model contains a matrix called err.rate
+  # And we want to access the value in the last row and in the first column
+  # (i.e. the OOB error rate when all 500 trees have been made)
+  oob.values[i] <- temp.model$err.rate[nrow(temp.model$err.rate), 1]
+}
+```
+
+Print out the OOB error rates for different values for `mtry`
+```{r}
+oob.values
+```
+- The 3rd value, corresponding to `mtry = 3`, which is the default in this case, does not have the lowest OOB error rate.  
+- So the default value was not optimal.  
+- We need to choose the 2nd value since it has the lowest OOB error rate.  
+
+Make a new random forest model:
+```{r}
+new_model <- randomForest(formula = good_bad_wine ~ . - quality, data = wine_data, ntree = 200, mtry = 2, proximity = TRUE)
+
+new_model
+```
+
+Lastly, we want to use the random forest to draw an MDS plot with samples.  
+This will show us how they are related to each other.  
+
+We start by using `dist()` to make a distance matrix from 1-proximity matrix.
+```{r}
+distance.matrix <- dist(1 - new_model$proximity)
+```
+
+Then we run `cmdscale()` on the distance matrix.
+```{r}
+# Classical Multidimensional Scaling
+mds.stuff <- cmdscale(distance.matrix, eig = TRUE, x.ret = TRUE)
+```
+
+Then we calculate the percentage of variation in the distance matrix that the X and Y axes account for. 
+```{r}
+mds.var.per <- round(mds.stuff$eig/sum(mds.stuff$eig)*100, 1)
+```
+
+Then we format the data for `ggplot()`
+```{r}
+mds.values <- mds.stuff$points
+
+mds.data <- data.frame(Sample = rownames(mds.values),
+                       X = mds.values[,1],
+                       Y = mds.values[,2],
+                       Status = wine_data$good_bad_wine)
+```
+
+Draw the graph with `ggplot()`
+```{r}
+ggplot(data = mds.data, aes(x = X, y = Y, label = Sample)) +
+  geom_text(aes(color = Status)) +
+  xlab(paste("MDS1 - ", mds.var.per[1], "%", sep = "")) +
+  ylab(paste("MDS2 - ", mds.var.per[2], "%", sep = "")) +
+  ggtitle("MDS plot using (1 - Random Forest Proximities)")
+```
+
+- We can see that Good sampels are on the right side.  
+- The X-axis accounts for 52.7% of the variation in the distance matrix.  
+- The y-axis only accounts for 8.9% of the variation in the distnace matrix.  
+- That means that the big differences are along the X-axis.  
+
+Variable importance:
+```{r}
+# Get importance
+importance <- importance(new_model)
+
+varImportance <- data.frame(Variables = row.names(importance),
+                            Importance = round(importance[, "MeanDecreaseGini"], 2))
+
+# Create a rank variable based on importance
+rankImportance <- varImportance %>% 
+  mutate(Rank = paste0("#", dense_rank(desc(Importance))))
+
+# Use ggplot2 to visulalize the relative importance of variables
+ggplot(rankImportance, aes(x = reorder(Variables, Importance),
+                           y = Importance, fill = Importance)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(x = Variables, y = 0.5, label = Rank),
+            hjust = 0, vjust = 0.55, size = 4, color = "white") +
+  labs(x = "Variables") +
+  coord_flip() +
+  theme_classic()
+```
+
+## Data for correlation analysis
+```{r}
+plot(wine_data)
+```
+
+Computing correlation matrix
+```{r}
+library(corrplot)
+
+# Remove 'good_bad_wine' sinece this is not a numeric variable.
+wine_data <- subset(wine_data, select = -good_bad_wine)
+
+cr <- cor(wine_data)
+head(round(cr, 2))
+```
+
+### Correlogram: Visualizing the correlation matrix
+```{r}
+corrplot(cr)
+```
+Positive correlation are displayed in blue and negative correlations in red color.  
+Color intensity and the size of the circle are proportional to the correlation coefficients.  
+
+Display the correlation.
+```{r}
+corrplot(cr, method = "number")
+```
+
+```{r}
+corrplot(cr, method = "ellipse")
+```
+- Ellipse is showing a plot of the two variables.  
+- If the tendency is for the ellipse to be oriented from lower left to upper rightm, that would be indicative of a positive correlation.  
+- Any ellipse that is going from the bottom right to the top left would be indicative of a negative correlation.  
+- The width of the ellipse is going to indicate the strength of the correlation.  
+- The major diagonal shows the perfect correlations, and the ellipse is very flat which means that it is a linear
+
+## Combining correlogram with the significance test
+### Computing the p-value of correlations
+```{r}
+cor.mtest <- function(mat, ...) {
+  mat <- as.matrix(mat)
+  n <- ncol(mat)
+  p.mat <- matrix(NA, n, n)
+  diag(p.mat) <- 0
+  for (i in 1:(n - 1)) {
+    for(j in (i + 1):n) {
+      tmp <- cor.test(mat[, i], mat[, j], ...)
+      p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
+    }
+  }
+  colnames(p.mat) <- rownames(p.mat) <- colnames(mat)
+  p.mat
+}
+
+p.mat <- cor.mtest(wine_data)
+head(p.mat)
+```
+
+### Add significance level to the correlogram
+```{r}
+# Specialized the insignificant value according to the significant level
+corrplot(cr, type = "upper", order = "hclust",
+         p.mat = p.mat, sig.level = 0.05)
+```
+
+```{r}
+# Leave blank on no significant coefficient
+corrplot(cr, type = "upper", order = "hclust",
+         p.mat = p.mat, sig.level = 0.05, insig = "blank")
+```
+
+In the above figure, correlations with p-value > 0.05 are considered as insignificant.  
+In this case the correlation coefficient values are leaved blank or crosses are added. 
+
+Interpretation:  
+- There is a strong positive relationship between `density` and `fixed.acidity`.
+- There is a strong positive relationship between `fixed.acidity` and `citric.acid`.  
+- There is a strong positive relationship between `free.sulfur.dioxie` and `total.sulfur.dioxide`.  
+- There is a strong negative relationship between `fixed.acidity` and `pH`.
