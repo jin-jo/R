@@ -5,5 +5,3 @@
 3. Bar Chart & Pie Chart
 4. Comparing distributions
 5. Correlation between variables
-6. Extreme Gradient Boosting (XGBoost) 
-7. Regression
